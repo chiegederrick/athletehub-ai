@@ -1,6 +1,25 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+} from "chart.js"
+
+import { Bar } from "react-chartjs-2"
+
+ChartJS.register(
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+)
+
 const API = "https://athletehub-backend-yvgn.onrender.com"
 
 function App() {
@@ -38,7 +57,7 @@ function App() {
     }
   }
 
-  // LOAD AI SCOUTING
+  // LOAD SCOUTING
   const loadScouts = async () => {
     try {
       const res = await axios.get(`${API}/scout`)
@@ -53,6 +72,17 @@ function App() {
     loadStats()
     loadScouts()
   }, [])
+
+  // CHART DATA
+  const chartData = {
+    labels: players.map(p => p[1]),
+    datasets: [
+      {
+        label: "Points",
+        data: players.map(p => p[2])
+      }
+    ]
+  }
 
   return (
     <div style={{ padding: 20 }}>
@@ -79,6 +109,12 @@ function App() {
           <b>{p[1]}</b> | PTS: {p[2]} | REB: {p[3]} | AST: {p[4]}
         </div>
       ))}
+
+      {/* CHART */}
+      <h2>📊 Player Performance Chart</h2>
+      <div style={{ maxWidth: 600 }}>
+        <Bar data={chartData} />
+      </div>
 
       {/* AI SCOUTING */}
       <h2>🧠 AI Scouting Report</h2>
