@@ -146,9 +146,10 @@ def nba_players():
 
     players = data[[
         "PLAYER_NAME",
+        "TEAM_ABBREVIATION",
         "PTS",
         "REB",
         "AST"
-    ]].head(20)
+    ]]
 
-    return players.values.tolist()
+    return players.to_dict(orient="records")
