@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 
+const API = "https://athletehub-backend-yvgn.onrender.com"
+
 function App() {
   const [players, setPlayers] = useState([])
   const [stats, setStats] = useState(null)
@@ -8,7 +10,7 @@ function App() {
 
   // ADD PLAYER
   const addPlayer = async () => {
-    await axios.post("axios.get("https://athletehub-backend-yvgn.onrender.com/players")", {
+    await axios.post(`${API}/add-player`, {
       name: "Derrick",
       points: Math.floor(Math.random() * 30),
       rebounds: Math.floor(Math.random() * 10),
@@ -22,14 +24,14 @@ function App() {
 
   // LOAD PLAYERS
   const loadPlayers = async () => {
-    const res = await axios.get("axios.get("https://athletehub-backend-yvgn.onrender.com/players")")
+    const res = await axios.get(`${API}/players`)
     setPlayers(res.data)
   }
 
   // LOAD ANALYTICS
   const loadStats = async () => {
     try {
-      const res = await axios.get("axios.get("https://athletehub-backend-yvgn.onrender.com/players")")
+      const res = await axios.get(`${API}/analytics`)
       setStats(res.data)
     } catch (err) {
       console.log("Analytics not ready yet")
@@ -39,7 +41,7 @@ function App() {
   // LOAD AI SCOUTING
   const loadScouts = async () => {
     try {
-      const res = await axios.get("axios.get("https://athletehub-backend-yvgn.onrender.com/players")")
+      const res = await axios.get(`${API}/scout`)
       setScouts(res.data)
     } catch (err) {
       console.log("Scout not ready yet")
