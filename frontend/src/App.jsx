@@ -8,7 +8,7 @@ function App() {
 
   // ADD PLAYER
   const addPlayer = async () => {
-    await axios.post("http://127.0.0.1:8000/add-player", {
+    await axios.post("axios.get("https://athletehub-backend-yvgn.onrender.com/players")", {
       name: "Derrick",
       points: Math.floor(Math.random() * 30),
       rebounds: Math.floor(Math.random() * 10),
@@ -22,14 +22,14 @@ function App() {
 
   // LOAD PLAYERS
   const loadPlayers = async () => {
-    const res = await axios.get("http://127.0.0.1:8000/players")
+    const res = await axios.get("axios.get("https://athletehub-backend-yvgn.onrender.com/players")")
     setPlayers(res.data)
   }
 
   // LOAD ANALYTICS
   const loadStats = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/analytics")
+      const res = await axios.get("axios.get("https://athletehub-backend-yvgn.onrender.com/players")")
       setStats(res.data)
     } catch (err) {
       console.log("Analytics not ready yet")
@@ -39,7 +39,7 @@ function App() {
   // LOAD AI SCOUTING
   const loadScouts = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/scout")
+      const res = await axios.get("axios.get("https://athletehub-backend-yvgn.onrender.com/players")")
       setScouts(res.data)
     } catch (err) {
       console.log("Scout not ready yet")
