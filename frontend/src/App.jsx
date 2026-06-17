@@ -43,7 +43,7 @@ function App() {
 
   // LOAD PLAYERS
   const loadPlayers = async () => {
-    const res = await axios.get(`${API}/players`)
+    const res = await axios.get(`${API}/nba-players`)
     setPlayers(res.data)
   }
 

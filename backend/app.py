@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
 
+# NBA API IMPORT
+from nba_api.stats.endpoints import leaguedashplayerstats
+
 app = FastAPI()
 
 # Allow frontend (React) to connect
@@ -45,7 +48,7 @@ class PlayerStats(BaseModel):
 def home():
     return {"message": "AthleteHub API Running"}
 
-# ADD PLAYER
+# ADD PLAYER (manual input still works)
 @app.post("/add-player")
 def add_player(stats: PlayerStats):
     conn = sqlite3.connect("athletehub.db")
@@ -61,7 +64,7 @@ def add_player(stats: PlayerStats):
 
     return {"message": "Player added successfully"}
 
-# GET ALL PLAYERS
+# GET MANUAL PLAYERS (your DB)
 @app.get("/players")
 def get_players():
     conn = sqlite3.connect("athletehub.db")
@@ -115,10 +118,8 @@ def scout_players():
     for player in data:
         name, pts, reb, ast = player
 
-        # AI-style scoring formula
         score = (pts * 0.5) + (reb * 0.3) + (ast * 0.2)
 
-        # Player classification logic
         if pts > 25:
             role = "Elite Scorer"
         elif ast > 7:
@@ -135,3 +136,19 @@ def scout_players():
         })
 
     return scouts
+
+
+# ---------------- REAL NBA DATA (NEW PART) ----------------
+
+@app.get("/nba-players")
+def nba_players():
+    data = leaguedashplayerstats.LeagueDashPlayerStats().get_data_frames()[0]
+
+    players = data[[
+        "PLAYER_NAME",
+        "PTS",
+        "REB",
+        "AST"
+    ]].head(20)
+
+    return players.values.tolist()
