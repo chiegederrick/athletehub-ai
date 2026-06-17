@@ -20,110 +20,79 @@ ChartJS.register(
   Legend
 )
 
+// YOUR BACKEND
 const API = "https://athletehub-backend-yvgn.onrender.com"
 
 function App() {
   const [players, setPlayers] = useState([])
-  const [stats, setStats] = useState(null)
-  const [scouts, setScouts] = useState([])
 
-  // ADD PLAYER
-  const addPlayer = async () => {
-    await axios.post(`${API}/add-player`, {
-      name: "Derrick",
-      points: Math.floor(Math.random() * 30),
-      rebounds: Math.floor(Math.random() * 10),
-      assists: Math.floor(Math.random() * 10)
-    })
-
-    loadPlayers()
-    loadStats()
-    loadScouts()
-  }
-
-  // LOAD PLAYERS
+  // LOAD NBA PLAYERS
   const loadPlayers = async () => {
-    const res = await axios.get(`${API}/nba-players`)
-    setPlayers(res.data)
-  }
-
-  // LOAD ANALYTICS
-  const loadStats = async () => {
     try {
-      const res = await axios.get(`${API}/analytics`)
-      setStats(res.data)
+      const res = await axios.get(`${API}/nba-players`)
+      setPlayers(res.data)
     } catch (err) {
-      console.log("Analytics not ready yet")
-    }
-  }
-
-  // LOAD SCOUTING
-  const loadScouts = async () => {
-    try {
-      const res = await axios.get(`${API}/scout`)
-      setScouts(res.data)
-    } catch (err) {
-      console.log("Scout not ready yet")
+      console.log("Failed to load NBA players", err)
     }
   }
 
   useEffect(() => {
     loadPlayers()
-    loadStats()
-    loadScouts()
   }, [])
 
-  // CHART DATA
+  // CHART DATA (NBA FORMAT: [name, pts, reb, ast])
   const chartData = {
-    labels: players.map(p => p[1]),
+    labels: players.map(p => p[0]),
     datasets: [
       {
         label: "Points",
-        data: players.map(p => p[2])
+        data: players.map(p => p[1])
       }
     ]
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>🏀 AthleteHub Dashboard</h1>
+    <div style={{
+      padding: 30,
+      maxWidth: 1000,
+      margin: "0 auto",
+      fontFamily: "Arial"
+    }}>
+      
+      <h1>🏀 AthleteHub - NBA Analytics</h1>
 
-      {/* ANALYTICS */}
-      {stats && (
-        <div style={{ marginBottom: 20 }}>
-          <h3>📊 Analytics</h3>
-          <p>Average Points: {stats.average_points}</p>
-          <p>Top Player: {stats.top_player?.[0]}</p>
-        </div>
-      )}
+      {/* PLAYER LIST */}
+      <div style={{
+        background: "#f5f5f5",
+        padding: 20,
+        borderRadius: 10,
+        marginTop: 20
+      }}>
+        <h2>🏆 NBA Players</h2>
 
-      <button onClick={addPlayer}>
-        ➕ Add Player Stats
-      </button>
+        {players.length === 0 && <p>Loading players...</p>}
 
-      {/* PLAYERS */}
-      <h2>🏆 Players</h2>
-
-      {players.map((p, i) => (
-        <div key={i} style={{ margin: "10px 0" }}>
-          <b>{p[1]}</b> | PTS: {p[2]} | REB: {p[3]} | AST: {p[4]}
-        </div>
-      ))}
-
-      {/* CHART */}
-      <h2>📊 Player Performance Chart</h2>
-      <div style={{ maxWidth: 600 }}>
-        <Bar data={chartData} />
+        {players.map((p, i) => (
+          <div key={i} style={{ margin: "8px 0" }}>
+            <b>{p[0]}</b> | PTS: {p[1]} | REB: {p[2]} | AST: {p[3]}
+          </div>
+        ))}
       </div>
 
-      {/* AI SCOUTING */}
-      <h2>🧠 AI Scouting Report</h2>
+      {/* CHART */}
+      <div style={{
+        background: "#f5f5f5",
+        padding: 20,
+        borderRadius: 10,
+        marginTop: 20
+      }}>
+        <h2>📊 Points Chart</h2>
 
-      {scouts.map((p, i) => (
-        <div key={i} style={{ margin: "10px 0" }}>
-          <b>{p.name}</b> — {p.role} — Score: {p.score}
+        <div style={{ maxWidth: 700 }}>
+          <Bar data={chartData} />
         </div>
-      ))}
+      </div>
+
     </div>
   )
 }
