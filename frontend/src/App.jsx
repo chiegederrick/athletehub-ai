@@ -12,7 +12,7 @@ function App() {
   const [p1, setP1] = useState(null)
   const [p2, setP2] = useState(null)
 
-  // LOAD NBA
+  // LOAD NBA DATA
   const loadNBA = async () => {
     const res = await axios.get(`${API}/nba-players`)
     setNba(res.data)
@@ -22,84 +22,105 @@ function App() {
     loadNBA()
   }, [])
 
-  // FILTERED PLAYERS
+  // FILTER SEARCH
   const filtered = nba.filter(p =>
     p.PLAYER_NAME.toLowerCase().includes(search.toLowerCase())
   )
 
-  // TOP 5 LEADERBOARD
-  const top5 = [...nba]
-    .sort((a, b) => b.PTS - a.PTS)
-    .slice(0, 5)
+  // TOP LEADERSHIPS
+  const topPoints = [...nba].sort((a, b) => b.PTS - a.PTS).slice(0, 5)
+  const topReb = [...nba].sort((a, b) => b.REB - a.REB).slice(0, 5)
+  const topAst = [...nba].sort((a, b) => b.AST - a.AST).slice(0, 5)
 
-  // UI STYLE
+  // THEME
   const theme = {
-    background: dark ? "#0f0f0f" : "#f5f5f5",
-    color: dark ? "white" : "black",
+    background: dark ? "#0b0f1a" : "#f5f5f5",
+    color: dark ? "#ffffff" : "#111",
     minHeight: "100vh",
-    padding: 20
+    padding: 20,
+    fontFamily: "'Roboto Condensed', Arial, sans-serif"
   }
 
   return (
     <div style={theme}>
+
       {/* HEADER */}
-      <h1>🏀 AthleteHub NBA Analytics</h1>
+      <h1 style={{
+        color: dark ? "#00d4ff" : "#111",
+        fontSize: "38px",
+        fontWeight: "800"
+      }}>
+        🏀 StatShot
+      </h1>
 
-      <button onClick={() => setDark(!dark)}>
-        Toggle {dark ? "Light" : "Dark"} Mode
-      </button>
-
-      <button onClick={loadNBA} style={{ marginLeft: 10 }}>
-        🔄 Refresh Stats
-      </button>
+      <div style={{ marginBottom: 20 }}>
+        <button onClick={() => setDark(!dark)}>Toggle Theme</button>
+        <button onClick={loadNBA} style={{ marginLeft: 10 }}>
+          🔄 Refresh Stats
+        </button>
+      </div>
 
       {/* TABS */}
-      <div style={{ marginTop: 20 }}>
+      <div style={{ marginBottom: 20 }}>
         <button onClick={() => setTab("nba")}>NBA</button>
         <button onClick={() => setTab("compare")}>Compare</button>
         <button onClick={() => setTab("leaderboard")}>Leaderboard</button>
       </div>
 
-      {/* SEARCH */}
+      {/* ================= NBA TAB ================= */}
       {tab === "nba" && (
         <>
+          {/* SEARCH */}
           <input
             placeholder="Search NBA player..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ marginTop: 20, padding: 10, width: "100%" }}
+            style={{
+              padding: 10,
+              width: "100%",
+              borderRadius: 8,
+              marginBottom: 20
+            }}
           />
 
-          {/* PLAYER CARDS */}
-          {filtered.map((p, i) => (
-            <div
-              key={i}
-              style={{
-                background: dark ? "#1a1a1a" : "white",
-                padding: 15,
-                margin: 10,
-                borderRadius: 10
-              }}
-            >
-              <b>{p.PLAYER_NAME}</b> ({p.TEAM_ABBREVIATION})
-              <div>PTS: {p.PTS} | REB: {p.REB} | AST: {p.AST}</div>
+          {/* PLAYER GRID */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: 15
+          }}>
+            {filtered.map((p, i) => (
+              <div
+                key={i}
+                style={{
+                  background: dark ? "#151a2e" : "white",
+                  padding: 15,
+                  borderRadius: 12,
+                  border: dark ? "1px solid #222" : "1px solid #ddd",
+                  cursor: "pointer"
+                }}
+              >
+                <h3>{p.PLAYER_NAME}</h3>
+                <p>🏀 {p.TEAM_ABBREVIATION}</p>
+                <p>PTS: {p.PTS} | REB: {p.REB} | AST: {p.AST}</p>
 
-              <button onClick={() => setP1(p)}>Compare 1</button>
-              <button onClick={() => setP2(p)} style={{ marginLeft: 5 }}>
-                Compare 2
-              </button>
-            </div>
-          ))}
+                <button onClick={() => setP1(p)}>Compare 1</button>
+                <button onClick={() => setP2(p)} style={{ marginLeft: 5 }}>
+                  Compare 2
+                </button>
+              </div>
+            ))}
+          </div>
         </>
       )}
 
-      {/* COMPARE TAB */}
+      {/* ================= COMPARE TAB ================= */}
       {tab === "compare" && (
-        <div style={{ marginTop: 20 }}>
+        <div>
           <h2>⚔️ Player Comparison</h2>
 
           {p1 && p2 ? (
-            <div style={{ display: "flex", gap: 20 }}>
+            <div style={{ display: "flex", gap: 40 }}>
               <div>
                 <h3>{p1.PLAYER_NAME}</h3>
                 <p>PTS: {p1.PTS}</p>
@@ -120,18 +141,28 @@ function App() {
         </div>
       )}
 
-      {/* LEADERBOARD */}
+      {/* ================= LEADERBOARD TAB ================= */}
       {tab === "leaderboard" && (
-        <div style={{ marginTop: 20 }}>
-          <h2>🏆 Top 5 Players</h2>
+        <div>
+          <h2>🏆 Leaderboards</h2>
 
-          {top5.map((p, i) => (
-            <div key={i}>
-              #{i + 1} {p.PLAYER_NAME} - {p.PTS} PTS
-            </div>
+          <h3>🔥 Points Leaders</h3>
+          {topPoints.map((p, i) => (
+            <p key={i}>{p.PLAYER_NAME} - {p.PTS}</p>
+          ))}
+
+          <h3>💪 Rebounds Leaders</h3>
+          {topReb.map((p, i) => (
+            <p key={i}>{p.PLAYER_NAME} - {p.REB}</p>
+          ))}
+
+          <h3>🎯 Assists Leaders</h3>
+          {topAst.map((p, i) => (
+            <p key={i}>{p.PLAYER_NAME} - {p.AST}</p>
           ))}
         </div>
       )}
+
     </div>
   )
 }
