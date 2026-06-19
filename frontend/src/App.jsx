@@ -1,123 +1,143 @@
-import { useEffect, useState } from "react"
-import axios from "axios"
+import { useState } from "react"
+
+import Login from "./auth/Login"
+import Register from "./auth/Register"
+
+import Home from "./pages/Home"
+import Compare from "./pages/Compare"
+import Leaderboard from "./pages/Leaderboard"
+
+import Sidebar from "./components/Sidebar"
 
 import "./styles.css"
 
-import Navbar from "./components/Navbar"
-import Hero from "./components/Hero"
-import Filters from "./components/Filters"
-import PlayerCard from "./components/PlayerCard"
-import PlayerModal from "./components/PlayerModal"
-import CompareView from "./components/CompareView"
-import Leaderboards from "./components/Leaderboards"
-
-const API =
-"https://athletehub-backend-yvgn.onrender.com"
-
 export default function App(){
 
-const [players,setPlayers]=useState([])
-const [dark,setDark]=useState(true)
+const [user,setUser]=useState(null)
 
-const [search,setSearch]=useState("")
-const [team,setTeam]=useState("ALL")
+const [page,setPage]=useState("home")
 
-const [selected,setSelected]=useState(null)
+const [mode,setMode]=useState("login")
 
-const [compare1,setCompare1]=useState(null)
-const [compare2,setCompare2]=useState(null)
-
-const [tab,setTab]=useState("home")
-
-useEffect(()=>{
-loadPlayers()
-},[])
-
-const loadPlayers=async()=>{
-const res=
-await axios.get(`${API}/nba-players`)
-
-setPlayers(res.data)
-}
-
-const filtered=
-players.filter(p=>
-
-(team==="ALL"||
-p.TEAM_ABBREVIATION===team)
-
-&&
-
-p.PLAYER_NAME
-.toLowerCase()
-.includes(
-search.toLowerCase()
-)
-)
+if(!user){
 
 return(
 
-<div className={dark?"dark":"light"}>
+<div className="auth">
 
-<Navbar
-tab={tab}
-setTab={setTab}
-dark={dark}
-setDark={setDark}
-/>
+<div className="authBox">
 
-{tab==="home"&&(
-<>
-<Hero/>
+<div className="brand">
 
-<Filters
-players={players}
-search={search}
-setSearch={setSearch}
-team={team}
-setTeam={setTeam}
-/>
-
-<div className="grid">
-
-{filtered.map((p,i)=>(
-
-<PlayerCard
-key={i}
-player={p}
-setSelected={setSelected}
-setCompare1={setCompare1}
-setCompare2={setCompare2}
-/>
-
-))}
+StatShot
 
 </div>
 
-</>
-)}
+{
 
-{tab==="compare"&&(
+mode==="login"
 
-<CompareView
-compare1={compare1}
-compare2={compare2}
+?
+
+<Login
+setUser={setUser}
 />
 
-)}
+:
 
-{tab==="leaderboard"&&(
+<Register/>
 
-<Leaderboards
-players={players}
+}
+
+<button
+className="switch"
+
+onClick={()=>
+
+setMode(
+
+mode==="login"
+
+?
+
+"register"
+
+:
+
+"login"
+
+)
+
+}
+
+>
+
+{
+
+mode==="login"
+
+?
+
+"Create Account"
+
+:
+
+"Login"
+
+}
+
+</button>
+
+</div>
+
+</div>
+
+)
+
+}
+
+return(
+
+<div className="app">
+
+<Sidebar
+page={page}
+setPage={setPage}
 />
 
-)}
+<div className="content">
 
-<PlayerModal
-selected={selected}
-setSelected={setSelected}
-/>
+{
+
+page==="home"
+
+&&
+
+<Home user={user}/>
+
+}
+
+{
+
+page==="compare"
+
+&&
+
+<Compare/>
+
+}
+
+{
+
+page==="leaderboard"
+
+&&
+
+<Leaderboard/>
+
+}
+
+</div>
 
 </div>
 
